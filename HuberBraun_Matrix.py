@@ -1,60 +1,48 @@
 import numpy as np
+import settings
+import Fit_HuberBraun_Matrix_5param_AVB_First
 
-def HuberBraun_Matrix(t, y, params):
-  # Set Global Parmeters
-  global Iapp, C, gl, gsd, gsr, Vl, Vsd, Vsr, rho, phi
-  global ssd, V0sd, tausd, tausr
-  global vacc, vdep
-  global ggap, gsyne, gsyni, beta, vth, ar, ad, Esyne, Esyni
+def HuberBraun_Matrix(t, y, params=None):
+  V = y[0:settings.numCells].reshape(settings.numCells, 1)
+  asd = y[settings.numCells:2*settings.numCells].reshape(settings.numCells, 1)
+  asr = y[2*settings.numCells:3*settings.numCells].reshape(settings.numCells, 1)
+  s = y[3*settings.numCells:4*settings.numCells].reshape(settings.numCells, 1)
 
-  global numCells
-  global GJconn, Econn, Iconn
+  Vj_minus_Vi = np.array(np.meshgrid(V)) - np.array(np.meshgrid(V)).T
 
-  global IAVA, IAVB
+  asd_inf = 1/(1+np.exp(-settings.ssd*(V - settings.V0sd)))
 
-  global NEURONFACTOR1, NEURONFACTOR2, NEURONFACTOR3
+  Isd = settings.rho*settings.gsd*asd*(V-settings.Vsd)
+  Isr = settings.rho*settings.gsr*asr*(V-settings.Vsr)
+  Il = settings.gl*(V-settings.Vl)
 
-  global IsyniRec, IsyneRec
-
-  global PassiveInds
-
-  V = y[0:numCells]
-  asd = y[numCells:2*numCells]
-  asr = y[2*numCells:3*numCells]
-  s = y[3*numCells:4*numCells]
-
-  Vj_minus_Vi = np.meshgrid(V,V)
-
-  asd_inf = 1/(1+np.exp(-ssd*(V - V0sd)))
-
-  Isd = rho*gsd*asd*(V-Vsd)
-  Isr = rho*gsr*asr*(V-Vsr)
-  Il = gl*(V-Vl)
-
-  Isd[PassiveInds] = 0
-  Isr[PassiveInds] = 0
+  Isd[settings.PassiveInds] = 0
+  Isr[settings.PassiveInds] = 0
 
   # Connections: Gap Junctions and Synapses
-  alpha = 1/(1+np.exp(-beta*(V - vth)))
-  IgapMat = GJconn*np.exp(Vj_minus_Vi)
-  Igap = ggap*sum(IgapMat, axis=0)
+  alpha = 1/(1+np.exp(-settings.beta*(V - settings.vth)))
+  IgapMat = settings.GJconn * Vj_minus_Vi
+  Igap = settings.ggap * np.sum(IgapMat, axis=0).T
+  Igap = Igap.reshape(settings.numCells, 1)
 
-  sMat = np.meshgrid(s).T
+  sMat = np.meshgrid(s)
   VMat = np.meshgrid(V)
 
-  IsyniMat = Iconn*sMat*(VMat-Esyni)
-  Isyni = gsyni*sum(IsyniMat, axis=0).T
+  IsyniMat = settings.Iconn*sMat*(np.subtract(VMat, settings.Esyni))
+  Isyni = settings.gsyni * np.sum(IsyniMat, axis=0).T
+  Isyni = Isyni.reshape(settings.numCells, 1)
 
-  IsyneMat = Iconn*sMat*(VMat-Esyne)
-  Isyne = gsyne*sum(IsyneMat, axis=0).T
+  IsyneMat = settings.Iconn*sMat*(np.subtract(VMat, settings.Esyne))
+  Isyne = settings.gsyne * np.sum(IsyneMat, axis=0).T
+  Isyne = Isyne.reshape(settings.numCells, 1)
 
-  IsyniRec = np.append(IsyniRec, np.max(np.max(Isyni)))
-  IsyneRec = np.append(IsyneRec, np.max(np.max(Isyne)))
+  settings.IsyniRec = np.append(settings.IsyniRec, np.max(np.max(Isyni)))
+  settings.IsyneRec = np.append(settings.IsyneRec, np.max(np.max(Isyne)))
 
-  z = np.zeros(4*numCells)
-  z[1:numCells+1] = (Iapp + IAVA + IAVB - Il*NEURONFACTOR2 - Isd*NEURONFACTOR2 - Isr*NEURONFACTOR2 - Igap*NEURONFACTOR2*NEURONFACTOR3 - Isyni*NEURONFACTOR2*NEURONFACTOR3 - Isyne*NEURONFACTOR2*NEURONFACTOR3)/C
-  z[numCells+1:2*numCells+1] = (phi/tausd)*(asd_inf - asd)
-  z[2*numCells+1:3*numCells+1] = (phi/tausr)*(NEURONFACTOR1*vacc*Isd*NEURONFACTOR2/NEURONFACTOR3 + vdep*asr)
-  z[3*numCells+1:4*numCells+1] = ar*alpha*(1-s) - ad*s
+  z = np.zeros(4*settings.numCells)
+  z[0:settings.numCells] = ((settings.Iapp + settings.IAVA + settings.IAVB - Il*settings.NEURONFACTOR2 - Isd*settings.NEURONFACTOR2 - Isr*settings.NEURONFACTOR2 - Igap*settings.NEURONFACTOR2*settings.NEURONFACTOR3 - Isyni*settings.NEURONFACTOR2*settings.NEURONFACTOR3 - Isyne*settings.NEURONFACTOR2*settings.NEURONFACTOR3)/settings.C).reshape(settings.numCells,)
+  z[settings.numCells:2*settings.numCells] = (settings.phi/settings.tausd)*(asd_inf - asd).reshape(settings.numCells,)
+  z[2*settings.numCells:3*settings.numCells] = (settings.phi/settings.tausr)*(settings.NEURONFACTOR1*settings.vacc*Isd*settings.NEURONFACTOR2/settings.NEURONFACTOR3 + settings.vdep*asr).reshape(settings.numCells,)
+  z[3*settings.numCells:4*settings.numCells] = (settings.ar*alpha*(1-s) - settings.ad*s).reshape(settings.numCells,)
 
   return z
