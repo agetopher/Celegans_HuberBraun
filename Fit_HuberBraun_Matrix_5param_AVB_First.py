@@ -176,4 +176,37 @@ def Fit_HuberBraun_Matrix_5param_AVB_First(v, r1):
 
   sol = solve_ivp(HuberBraun_Matrix, [t0, tf], inits, method='BDF', t_eval=tin)
 
-  return sol
+  V = sol.y[0:settings.numCells, :]
+  asd = sol.y[settings.numCells:2*settings.numCells, :]
+  asr = sol.y[2*settings.numCells:3*settings.numCells, :]
+  s = sol.y[3*settings.numCells:4*settings.numCells, :]
+
+  muscle_V = V[muscleInds, :]
+  dorsalmuscles_V = V[dorsalmuscleInds, :]
+
+  dorsal_Seg1 = sum(dorsalmuscles_V[0:3, :])
+  dorsal_Seg2 = sum(dorsalmuscles_V[3:6, :])
+  dorsal_Seg3 = sum(dorsalmuscles_V[6:9, :])
+  dorsal_Seg4 = sum(dorsalmuscles_V[9:12, :])
+  dorsal_Seg5 = sum(dorsalmuscles_V[12:15, :])
+  dorsal_Seg6 = sum(dorsalmuscles_V[15:18, :])
+
+  ventralmuscles_V = V[ventralmuscleInds, :]
+  ventral_Seg1 = sum(ventralmuscles_V[0:3, :])
+  ventral_Seg2 = sum(ventralmuscles_V[3:6, :])
+  ventral_Seg3 = sum(ventralmuscles_V[6:9, :])
+  ventral_Seg4 = sum(ventralmuscles_V[9:12, :])
+  ventral_Seg5 = sum(ventralmuscles_V[12:15, :])
+  ventral_Seg6 = sum(ventralmuscles_V[15:18, :])
+
+  d_minus_v_Seg1 = dorsal_Seg1 - ventral_Seg1
+  d_minus_v_Seg2 = dorsal_Seg2 - ventral_Seg2
+  d_minus_v_Seg3 = dorsal_Seg3 - ventral_Seg3
+  d_minus_v_Seg4 = dorsal_Seg4 - ventral_Seg4
+  d_minus_v_Seg5 = dorsal_Seg5 - ventral_Seg5
+  d_minus_v_Seg6 = dorsal_Seg6 - ventral_Seg6
+
+  data = np.concatenate([sol.t, d_minus_v_Seg1, d_minus_v_Seg2, d_minus_v_Seg3, d_minus_v_Seg4, d_minus_v_Seg5, d_minus_v_Seg6], axis=0)
+  
+
+  return data
