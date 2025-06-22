@@ -1,36 +1,36 @@
 import numpy as np
-import scipy.interpolate as interp1d
+from scipy.interpolate import interp1d
 
 def get_scores(rawdata, input):
   if len(rawdata) > 0:
-    if len(rawdata) > 200:
-      shortDatFiles = [shortDatFile, filex]
-    if np.sum(np.isnan(rawdata)) == 0:
-      rawt = rawdata[:, 1]
-      rawsegs = rawdata[:, 2:]
-      tall = np.arange(rawt[1], rawt[-1], 0.1)
-      segsall = interp1d(rawt, rawsegs, axis=0)(tall)
+    ## TODO: Ask about Short Dat Files
+    #if len(rawdata) < 200:
+      #shortDatFiles = [shortDatFile, filex]
+    if True:
+      rawt = rawdata[0, :]
+      rawsegs = rawdata[1:, :]
+      tall = np.arange(rawt[0], rawt[-1], 0.1)
+      segsall = interp1d(rawt, rawsegs, axis=1)(tall)
       tcut = 10000
-      subInds = np.where(tall >= tcut)
-      t = tall[subInds]
-      segs = segsall[subInds, :]
-      segAmps = np.max(segs, axis=0) - np.min(segs, axis=0)
+      t = tall[tall >= tcut]
+      segs = segsall[:, tall >= tcut]
+      segAmps = np.max(segs, axis=1) - np.min(segs, axis=1)
       ftobIncrec = []
       ftobDecrec = []
       btofIncrec = []
       btofDecrec = []
       if np.min(segAmps) > 1e-2:
-        segsN = np.zeros((len(segs), 6))
-        for ix in range(1, 6):
+        segsN = np.zeros((6, len(segs[0, :])))
+        for ix in range(0, 6):
           seg = segs[ix, :]
           segN = ((seg - np.quantile(seg, 0.5))/(np.quantile(seg, 0.95) - np.quantile(seg, 0.05)) - 0.5)*2
-          segsN[:, ix] = segN
-        seg1 = segsN[:, 1]
-        seg2 = segsN[:, 2]
-        seg3 = segsN[:, 3]
-        seg4 = segsN[:, 4]
-        seg5 = segsN[:, 5]
-        seg6 = segsN[:, 6]
+          segsN[ix, :] = segN
+        seg1 = segsN[0]
+        seg2 = segsN[1]
+        seg3 = segsN[2]
+        seg4 = segsN[3]
+        seg5 = segsN[4]
+        seg6 = segsN[5]
         seg1crossIncTimes = np.array([])
         seg2crossIncTimes = np.array([])
         seg3crossIncTimes = np.array([])
@@ -96,49 +96,79 @@ def get_scores(rawdata, input):
         
         allCrossIncLabels = np.concatenate((seg1crossIncLabels, seg2crossIncLabels, seg3crossIncLabels, seg4crossIncLabels, seg5crossIncLabels, seg6crossIncLabels))
         allCrossIncTimes = np.concatenate((seg1crossIncTimes, seg2crossIncTimes, seg3crossIncTimes, seg4crossIncTimes, seg5crossIncTimes, seg6crossIncTimes))
-        allCrossIncSlopes = np.ones((len(allCrossIncTimes), 1))
+        allCrossIncSlopes = np.ones((len(allCrossIncTimes),))
         allCrossDecLabels = np.concatenate((seg1crossDecLabels, seg2crossDecLabels, seg3crossDecLabels, seg4crossDecLabels, seg5crossDecLabels, seg6crossDecLabels))
         allCrossDecTimes = np.concatenate((seg1crossDecTimes, seg2crossDecTimes, seg3crossDecTimes, seg4crossDecTimes, seg5crossDecTimes, seg6crossDecTimes))
-        allCrossDecSlopes = np.ones((len(allCrossDecTimes), 1))
-
+        allCrossDecSlopes = -1*np.ones((len(allCrossDecTimes),))
+        allCrossInc = np.array([allCrossIncTimes, allCrossIncLabels, allCrossIncSlopes])
+        allCrossDec = np.array([allCrossDecTimes, allCrossDecLabels, allCrossDecSlopes])
+        allCross = np.concatenate((allCrossInc, allCrossDec), axis=1)
+        allCrossSorted = allCross[allCross[:, 0].argsort()]
       else:
         print('amplitute below threshold')
+        allCrossSorted = np.nan
     else:
       print(".dat file has nan value")
       allCrossSorted = np.nan
 
   data = allCrossSorted 
   if np.sum(np.sum(np.isnan(data))) == 0:
-    times = data[:, 0]
-    labels = data[:, 1]
-    slopes = data[:, 2]
-    # Get Segment Crossings
-    seg1IncInds = np.where(labels == 1 and slopes == 1)
-    seg2IncInds = np.where(labels == 2 and slopes == 1)
-    seg3IncInds = np.where(labels == 3 and slopes == 1)
-    seg4IncInds = np.where(labels == 4 and slopes == 1)
-    seg5IncInds = np.where(labels == 5 and slopes == 1)
-    seg6IncInds = np.where(labels == 6 and slopes == 1)
-    seg1DecInds = np.where(labels == 1 and slopes == -1)
-    seg2DecInds = np.where(labels == 2 and slopes == -1)
-    seg3DecInds = np.where(labels == 3 and slopes == -1)
-    seg4DecInds = np.where(labels == 4 and slopes == -1)
-    seg5DecInds = np.where(labels == 5 and slopes == -1)
-    seg6DecInds = np.where(labels == 6 and slopes == -1)
+    times = data[0, :]
+    labels = data[1, :]
+    slopes = data[2, :]
+
+    seg1IncInds = np.array([])
+    seg2IncInds = np.array([])
+    seg3IncInds = np.array([])
+    seg4IncInds = np.array([])
+    seg5IncInds = np.array([])
+    seg6IncInds = np.array([])
+    seg1DecInds = np.array([])
+    seg2DecInds = np.array([])
+    seg3DecInds = np.array([])
+    seg4DecInds = np.array([])
+    seg5DecInds = np.array([])
+    seg6DecInds = np.array([])
+
+    for i in range(len(times)):
+      if labels[i] == 1 and slopes[i] == 1:
+        seg1IncInds = np.append(seg1IncInds, i)
+      elif labels[i] == 2 and slopes[i] == 1:
+        seg2IncInds = np.append(seg2IncInds, i)
+      elif labels[i] == 3 and slopes[i] == 1:
+        seg3IncInds = np.append(seg3IncInds, i)
+      elif labels[i] == 4 and slopes[i] == 1:
+        seg4IncInds = np.append(seg4IncInds, i)
+      elif labels[i] == 5 and slopes[i] == 1:
+        seg5IncInds = np.append(seg5IncInds, i)
+      elif labels[i] == 6 and slopes[i] == 1:
+        seg6IncInds = np.append(seg6IncInds, i)
+      elif labels[i] == 1 and slopes[i] == -1:
+        seg1DecInds = np.append(seg1DecInds, i)
+      elif labels[i] == 2 and slopes[i] == -1:
+        seg2DecInds = np.append(seg2DecInds, i)
+      elif labels[i] == 3 and slopes[i] == -1:
+        seg3DecInds = np.append(seg3DecInds, i)
+      elif labels[i] == 4 and slopes[i] == -1:
+        seg4DecInds = np.append(seg4DecInds, i)
+      elif labels[i] == 5 and slopes[i] == -1:
+        seg5DecInds = np.append(seg5DecInds, i)
+      elif labels[i] == 6 and slopes[i] == -1:
+        seg6DecInds = np.append(seg6DecInds, i)
 
     # Get Segment Crossing Times
-    seg1IncTimes = times[seg1IncInds]
-    seg2IncTimes = times[seg2IncInds]
-    seg3IncTimes = times[seg3IncInds]
-    seg4IncTimes = times[seg4IncInds]
-    seg5IncTimes = times[seg5IncInds]
-    seg6IncTimes = times[seg6IncInds]
-    seg1DecTimes = times[seg1DecInds]
-    seg2DecTimes = times[seg2DecInds]
-    seg3DecTimes = times[seg3DecInds]
-    seg4DecTimes = times[seg4DecInds]
-    seg5DecTimes = times[seg5DecInds]
-    seg6DecTimes = times[seg6DecInds]
+    seg1IncTimes = times[np.where(seg1IncInds)]
+    seg2IncTimes = times[np.where(seg2IncInds)]
+    seg3IncTimes = times[np.where(seg3IncInds)]
+    seg4IncTimes = times[np.where(seg4IncInds)]
+    seg5IncTimes = times[np.where(seg5IncInds)]
+    seg6IncTimes = times[np.where(seg6IncInds)]
+    seg1DecTimes = times[np.where(seg1DecInds)]
+    seg2DecTimes = times[np.where(seg2DecInds)]
+    seg3DecTimes = times[np.where(seg3DecInds)]
+    seg4DecTimes = times[np.where(seg4DecInds)]
+    seg5DecTimes = times[np.where(seg5DecInds)]
+    seg6DecTimes = times[np.where(seg6DecInds)]
 
     # Get Alternation Periods
     ftobIncAltPeriods = np.diff(seg1IncTimes)
@@ -484,4 +514,4 @@ def get_scores(rawdata, input):
         DecAltPeriod = np.nan
         IncPropAltRatio = np.nan
         DecPropAltRatio = np.nan
-  return np.concatenate(score1, score2, score3, IncCount, DecCount,IncPropPeriod, DecPropPeriod, IncAltPeriod, DecAltPeriod, IncPropAltRatio, DecPropAltRatio)
+  return [score1, score2, score3, IncCount, DecCount,IncPropPeriod, DecPropPeriod, IncAltPeriod, DecAltPeriod, IncPropAltRatio, DecPropAltRatio]

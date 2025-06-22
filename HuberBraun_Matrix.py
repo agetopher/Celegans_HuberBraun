@@ -22,24 +22,25 @@ def HuberBraun_Matrix(t, y, params=None):
   # Connections: Gap Junctions and Synapses
   alpha = 1/(1+np.exp(-settings.beta*(V - settings.vth)))
   IgapMat = settings.GJconn * Vj_minus_Vi
-  Igap = settings.ggap * np.sum(IgapMat, axis=0).T
+  Igap = settings.ggap * np.sum(IgapMat, axis=1).T
   Igap = Igap.reshape(settings.numCells, 1)
 
-  sMat = np.meshgrid(s)
-  VMat = np.meshgrid(V)
+  sMat, sloss = np.meshgrid(s, s)
+  VMat, Vloss = np.meshgrid(V, V)
+  sMat = sMat.T
 
-  IsyniMat = settings.Iconn*sMat*(np.subtract(VMat, settings.Esyni))
-  Isyni = settings.gsyni * np.sum(IsyniMat, axis=0).T
+  IsyniMat = settings.Econn*sMat*(np.subtract(VMat, settings.Esyni))
+  Isyni = settings.gsyni * np.sum(IsyniMat, axis=1).T
   Isyni = Isyni.reshape(settings.numCells, 1)
 
-  IsyneMat = settings.Iconn*sMat*(np.subtract(VMat, settings.Esyne))
-  Isyne = settings.gsyne * np.sum(IsyneMat, axis=0).T
+  IsyneMat = settings.Econn*sMat*(np.subtract(VMat, settings.Esyne))
+  Isyne = settings.gsyne * np.sum(IsyneMat, axis=1).T
   Isyne = Isyne.reshape(settings.numCells, 1)
 
   settings.IsyniRec = np.append(settings.IsyniRec, np.max(np.max(Isyni)))
   settings.IsyneRec = np.append(settings.IsyneRec, np.max(np.max(Isyne)))
 
-  z = np.zeros(4*settings.numCells)
+  z = np.concatenate([V, asd, asr, s]).reshape(4*settings.numCells,)
   z[0:settings.numCells] = ((settings.Iapp + settings.IAVA + settings.IAVB - Il*settings.NEURONFACTOR2 - Isd*settings.NEURONFACTOR2 - Isr*settings.NEURONFACTOR2 - Igap*settings.NEURONFACTOR2*settings.NEURONFACTOR3 - Isyni*settings.NEURONFACTOR2*settings.NEURONFACTOR3 - Isyne*settings.NEURONFACTOR2*settings.NEURONFACTOR3)/settings.C).reshape(settings.numCells,)
   z[settings.numCells:2*settings.numCells] = (settings.phi/settings.tausd)*(asd_inf - asd).reshape(settings.numCells,)
   z[2*settings.numCells:3*settings.numCells] = (settings.phi/settings.tausr)*(settings.NEURONFACTOR1*settings.vacc*Isd*settings.NEURONFACTOR2/settings.NEURONFACTOR3 + settings.vdep*asr).reshape(settings.numCells,)

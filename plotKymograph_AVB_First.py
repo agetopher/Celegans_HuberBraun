@@ -4,47 +4,47 @@ import matplotlib.pyplot as plt
 import settings
 
 def plotKymograph_AVB_First(rawdata, r1, AVB_ratio1, AVB_ratio2, FixMaxAVB, fbest):
-  rawt = rawdata[:, 1]
-  rawsegs = rawdata[:, 2:]
+  rawt = rawdata[0, :]
+  rawsegs = rawdata[1:, :]
 
-  tall = np.arange(0, len(rawt), 0.05)
-  segsall = interp1d(rawt, rawsegs, axis=0)(tall)
+  tall = np.arange(rawt[0], rawt[-1], 0.05)
+  segsall = interp1d(rawt.T, rawsegs, axis=1)(tall)
 
   tcut = 10000
   tmax = 30000
   subInds = np.where((tall >= tcut) & (tall <= tmax))
 
   t = tall[subInds]
-  segs = segsall[subInds, :]
-  segAmps = np.max(segs, axis=0) - np.min(segs, axis=0)
-  segsN = np.zeros((len(segs), 6))
+  segs = segsall[:, subInds]
+  segAmps = np.max(segs, axis=1) - np.min(segs, axis=1)
+  segsN = np.zeros(segs.shape)
 
   if np.min(segAmps) < 1e-2:
     for ix in np.arange(0, 6):
-      seg = segs[:, ix]
+      seg = segs[ix, :]
       segN = ((seg - np.quantile(seg, 0.05))/(np.quantile(seg, 0.95) - np.quantile(seg, 0.05)) - 0.5)*2
-      segsN[:, ix] = segN
+      segsN[ix, :] = segN
 
-  seg1 = segsN[:, 0]
-  seg2 = segsN[:, 1]
-  seg3 = segsN[:, 2]
-  seg4 = segsN[:, 3]
-  seg5 = segsN[:, 4]
-  seg6 = segsN[:, 5]
+  seg1 = segsN[0, :]
+  seg2 = segsN[1, :]
+  seg3 = segsN[2, :]
+  seg4 = segsN[3, :]
+  seg5 = segsN[4, :]
+  seg6 = segsN[5, :]
 
-  seg1flag = np.zeros([len(seg1), 1])
-  seg2flag = np.zeros([len(seg2), 1])
-  seg3flag = np.zeros([len(seg3), 1])
-  seg4flag = np.zeros([len(seg4), 1])
-  seg5flag = np.zeros([len(seg5), 1])
-  seg6flag = np.zeros([len(seg6), 1])
+  seg1flag = np.zeros([1, len(seg1)])
+  seg2flag = np.zeros([1, len(seg2)])
+  seg3flag = np.zeros([1, len(seg3)])
+  seg4flag = np.zeros([1, len(seg4)])
+  seg5flag = np.zeros([1, len(seg5)])
+  seg6flag = np.zeros([1, len(seg6)])
 
-  seg1posInds = np.where(seg1 >= 0)
-  seg2posInds = np.where(seg2 >= 0)
-  seg3posInds = np.where(seg3 >= 0)
-  seg4posInds = np.where(seg4 >= 0)
-  seg5posInds = np.where(seg5 >= 0)
-  seg6posInds = np.where(seg6 >= 0)
+  seg1posInds = np.where(np.any(seg1 >= 0))
+  seg2posInds = np.where(np.any(seg2 >= 0))
+  seg3posInds = np.where(np.any(seg3 >= 0))
+  seg4posInds = np.where(np.any(seg4 >= 0))
+  seg5posInds = np.where(np.any(seg5 >= 0))
+  seg6posInds = np.where(np.any(seg6 >= 0))
 
   seg1flag[seg1posInds] = 1
   seg2flag[seg2posInds] = 1
@@ -53,10 +53,9 @@ def plotKymograph_AVB_First(rawdata, r1, AVB_ratio1, AVB_ratio2, FixMaxAVB, fbes
   seg5flag[seg5posInds] = 1
   seg6flag[seg6posInds] = 1
 
-  flagmat = np.concatenate((seg1flag, seg2flag, seg3flag, seg4flag, seg5flag, seg6flag), axis=1)
-
-  flagmat[6, :] = np.zeros([len(t), 1])
-  flagmat[:, len(t)+1] = np.zeros([1, 7])
+  flagmat = np.array([seg1flag.T, seg2flag.T, seg3flag.T, seg4flag.T, seg5flag.T, seg6flag.T, np.zeros(seg1flag.shape)])
+  print(flagmat.shape)
+  flagmat = np.concatenate((flagmat, np.zeros((1, len(t)+1))), axis=0)
 
   # Make black and white kymograph 
   plt.set(0, 'DefaultAxesFontSize', 24)

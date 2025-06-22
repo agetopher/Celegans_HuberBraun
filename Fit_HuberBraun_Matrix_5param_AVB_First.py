@@ -88,11 +88,11 @@ def Fit_HuberBraun_Matrix_5param_AVB_First(v, r1):
 
   settings.numCells = 102
 
-  AVAs = [1,2, 3, 10, 11]
-  AVBs = [1,2, 4, 8, 9]
-  dorsalmuscle = [12, 13, 14]
-  ventralmuscle = [15, 16, 17]
-  muscle = [12, 13, 14, 15, 16, 17]
+  AVAs = [0,1, 2, 9, 10]
+  AVBs = [0,1, 3, 7, 8]
+  dorsalmuscle = [11, 12, 13]
+  ventralmuscle = [14, 15, 16]
+  muscle = [11, 12, 13, 14, 15, 16]
 
   AVAinds = []
   AVBinds = []
@@ -141,6 +141,7 @@ def Fit_HuberBraun_Matrix_5param_AVB_First(v, r1):
 
   settings.V0sd = -40
   settings.ssd = 0.09
+
   settings.Esyne = 0
   settings.Esyni = -85
 
@@ -209,9 +210,9 @@ def Fit_HuberBraun_Matrix_5param_AVB_First(v, r1):
   d_minus_v_Seg5 = dorsal_Seg5 - ventral_Seg5
   d_minus_v_Seg6 = dorsal_Seg6 - ventral_Seg6
 
-  data = np.concatenate([sol.t, d_minus_v_Seg1, d_minus_v_Seg2, d_minus_v_Seg3, d_minus_v_Seg4, d_minus_v_Seg5, d_minus_v_Seg6], axis=0)
-
+  data = np.array([sol.t, d_minus_v_Seg1, d_minus_v_Seg2, d_minus_v_Seg3, d_minus_v_Seg4, d_minus_v_Seg5, d_minus_v_Seg6])
   scores = get_scores(data, 'AVB')
+  print(scores)
 
   SCOAVB = scores[0]
   IncCount = scores[3]
@@ -230,4 +231,4 @@ def Fit_HuberBraun_Matrix_5param_AVB_First(v, r1):
   plotKymograph_AVB_First(data_AVB_1, r1, ratio1AVB, ratio2AVB, BestMaxAVB, SCOAVB)
   plt.savefig((f'data/Kymograph_Comb%d_AVB_First.png', r1), 'figure_format', 'png')\
   
-  return 0
+  return np.concatenate([SCOAVB, ratio1AVB, ratio2AVB, IncCount, DecCount, V_AVB, asd_AVB, asr_AVB, s_AVB, data_AVB_1])
