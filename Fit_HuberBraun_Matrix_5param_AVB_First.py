@@ -1,9 +1,12 @@
 import numpy as np
 from scipy.integrate import solve_ivp
+import matplotlib.pyplot as plt
 import os
 import sys
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from HuberBraun_Matrix import HuberBraun_Matrix
+from get_scores import get_scores
+from plotKymograph_AVB_First import plotKymograph_AVB_First
 import settings
 
 def Fit_HuberBraun_Matrix_5param_AVB_First(v, r1):
@@ -207,6 +210,24 @@ def Fit_HuberBraun_Matrix_5param_AVB_First(v, r1):
   d_minus_v_Seg6 = dorsal_Seg6 - ventral_Seg6
 
   data = np.concatenate([sol.t, d_minus_v_Seg1, d_minus_v_Seg2, d_minus_v_Seg3, d_minus_v_Seg4, d_minus_v_Seg5, d_minus_v_Seg6], axis=0)
-  
 
-  return data
+  scores = get_scores(data, 'AVB')
+
+  SCOAVB = scores[0]
+  IncCount = scores[3]
+  ratio1AVB = scores[-2]
+  DecCount = scores[4]
+  ratio2AVB = scores[-1]
+
+  BestMaxAVB = IncCount + DecCount
+  V_AVB = V[-1, :].T
+  asd_AVB = asd[-1, :].T
+  asr_AVB = asr[-1, :].T
+  s_AVB = s[-1, :].T
+  data_AVB_1 = data;
+
+  H1 = plt.figure(1)
+  plotKymograph_AVB_First(data_AVB_1, r1, ratio1AVB, ratio2AVB, BestMaxAVB, SCOAVB)
+  plt.savefig((f'data/Kymograph_Comb%d_AVB_First.png', r1), 'figure_format', 'png')\
+  
+  return 0

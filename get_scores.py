@@ -11,7 +11,7 @@ def get_scores(rawdata, input):
       tall = np.arange(rawt[1], rawt[-1], 0.1)
       segsall = interp1d(rawt, rawsegs, axis=0)(tall)
       tcut = 10000
-      subInds = tall[tall >= tcut]
+      subInds = np.where(tall >= tcut)
       t = tall[subInds]
       segs = segsall[subInds, :]
       segAmps = np.max(segs, axis=0) - np.min(segs, axis=0)
