@@ -29,11 +29,11 @@ def HuberBraun_Matrix(t, y, params=None):
   VMat, Vloss = np.meshgrid(V, V)
   sMat = sMat.T
 
-  IsyniMat = settings.Econn*sMat*(np.subtract(VMat, settings.Esyni))
+  IsyniMat = settings.Iconn.T*sMat*(np.subtract(VMat, settings.Esyni))
   Isyni = settings.gsyni * np.sum(IsyniMat, axis=1).T
   Isyni = Isyni.reshape(settings.numCells, 1)
 
-  IsyneMat = settings.Econn*sMat*(np.subtract(VMat, settings.Esyne))
+  IsyneMat = settings.Econn.T*sMat*(np.subtract(VMat, settings.Esyne))
   Isyne = settings.gsyne * np.sum(IsyneMat, axis=1).T
   Isyne = Isyne.reshape(settings.numCells, 1)
 

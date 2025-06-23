@@ -4,9 +4,7 @@ import matplotlib.pyplot as plt
 import os
 import sys
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-from HuberBraun_Matrix import HuberBraun_Matrix
-from get_scores import get_scores
-from plotKymograph_AVB_First import plotKymograph_AVB_First
+from Functions import get_scores, plotKymograph_AVB_First, HuberBraun_Matrix
 import settings
 
 def Fit_HuberBraun_Matrix_5param_AVB_First(v, r1):
@@ -19,7 +17,7 @@ def Fit_HuberBraun_Matrix_5param_AVB_First(v, r1):
 
   # Load Classification Data
   OscillatorClassification = []
-  with open('data/Comb44_OscillatorsClassification.dat', 'r') as f:
+  with open('Data/Comb44_OscillatorsClassification.dat', 'r') as f:
     temp = f.readlines()
     for lin in temp:
       if lin == '\n':
@@ -27,7 +25,7 @@ def Fit_HuberBraun_Matrix_5param_AVB_First(v, r1):
       OscillatorClassification.append(float(lin.removesuffix('\n')))
 
   CellsClassification = []
-  with open('data/CellsClassification.dat', 'r') as f:
+  with open('Data/CellsClassification.dat', 'r') as f:
     temp = f.readlines()
     for lin in temp:
       if lin == '\n':
@@ -51,7 +49,7 @@ def Fit_HuberBraun_Matrix_5param_AVB_First(v, r1):
   settings.PassiveInds = np.array(settings.PassiveInds)
 
   settings.GJconn = []
-  with open('data/ConnectivityMatrix_SixSegments_GapJunctions.txt', 'r') as f:
+  with open('Data/ConnectivityMatrix_SixSegments_GapJunctions.txt', 'r') as f:
     temp = f.readlines()
     for lin in temp:
       if lin == '\n':
@@ -63,7 +61,7 @@ def Fit_HuberBraun_Matrix_5param_AVB_First(v, r1):
   settings.GJconn = np.array(settings.GJconn)
 
   settings.Econn = []
-  with open('data/ConnectivityMatrix_SixSegments_ExcitatorySynapses.txt', 'r') as f:
+  with open('Data/ConnectivityMatrix_SixSegments_ExcitatorySynapses.txt', 'r') as f:
     temp = f.readlines()
     for lin in temp:
       if lin == '\n':
@@ -75,7 +73,7 @@ def Fit_HuberBraun_Matrix_5param_AVB_First(v, r1):
   settings.Econn = np.array(settings.Econn)
 
   settings.Iconn = []
-  with open('data/ConnectivityMatrix_SixSegments_InhibitorySynapses.txt', 'r') as f:
+  with open('Data/ConnectivityMatrix_SixSegments_InhibitorySynapses.txt', 'r') as f:
     temp = f.readlines()
     for lin in temp:
       if lin == '\n':
@@ -155,7 +153,7 @@ def Fit_HuberBraun_Matrix_5param_AVB_First(v, r1):
   tin = list(range(t0, tf, 50))
 
   inits_V = []
-  with open('data/InitialVoltages.dat', 'r') as f:
+  with open('Data/InitialVoltages.dat', 'r') as f:
     temp = f.readlines()
     for lin in temp:
       if lin == '\n':
@@ -165,14 +163,14 @@ def Fit_HuberBraun_Matrix_5param_AVB_First(v, r1):
       currLine = [float(x) for x in currLine]
       inits_V.append(currLine)
 
-  inits_asd = 1/(1+np.exp(-settings.ssd*np.subtract(inits_V, settings.V0sd))) 
+  inits_asd = 1/(1+np.exp(-settings.ssd*(np.subtract(inits_V, settings.V0sd))))
   inits_asr = np.divide(np.add(inits_V, 60), 10)
-  inits_s = np.zeros(settings.numCells)
+  inits_s = np.zeros((settings.numCells, 1))
 
   inits_V = np.array(inits_V)
   inits_asd = np.array(inits_asd)
   inits_asr = np.array(inits_asr)
-  inits_s = np.array(inits_s).reshape(settings.numCells, 1)
+  inits_s = np.array(inits_s)
 
   inits = np.concatenate([inits_V, inits_asd, inits_asr, inits_s], axis=0)
 
@@ -229,6 +227,6 @@ def Fit_HuberBraun_Matrix_5param_AVB_First(v, r1):
 
   H1 = plt.figure(1)
   plotKymograph_AVB_First(data_AVB_1, r1, ratio1AVB, ratio2AVB, BestMaxAVB, SCOAVB)
-  plt.savefig((f'data/Kymograph_Comb%d_AVB_First.png', r1), 'figure_format', 'png')\
+  plt.savefig((f'Data/Kymograph_Comb%d_AVB_First.png', r1), 'figure_format', 'png')\
   
   return np.concatenate([SCOAVB, ratio1AVB, ratio2AVB, IncCount, DecCount, V_AVB, asd_AVB, asr_AVB, s_AVB, data_AVB_1])
