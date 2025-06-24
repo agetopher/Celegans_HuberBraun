@@ -135,7 +135,7 @@ def Fit_HuberBraun_Matrix_5param_AVB_First(v, r1):
   settings.tausd = 10
   settings.tausr = 20
   settings.vacc = 0.012
-  settings.vdep = 0.017
+  settings.vdep = 0.17
 
   settings.V0sd = -40
   settings.ssd = 0.09
@@ -185,6 +185,11 @@ def Fit_HuberBraun_Matrix_5param_AVB_First(v, r1):
 
   muscle_V = V[muscleInds, :]
   dorsalmuscles_V = V[dorsalmuscleInds, :]
+
+  plt.figure()
+  for i in range(settings.numCells):
+    plt.plot(sol.t, sol.y[i, :], label=f'Cell {i}')
+  plt.legend()
 
   dorsal_Seg1 = sum(dorsalmuscles_V[0:3, :])
   dorsal_Seg2 = sum(dorsalmuscles_V[3:6, :])
