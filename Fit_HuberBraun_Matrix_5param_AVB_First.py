@@ -115,6 +115,9 @@ def Fit_HuberBraun_Matrix_5param_AVB_First(v, r1):
   settings.IAVA = np.zeros(settings.numCells).reshape(settings.numCells, 1)
   settings.IAVB = np.zeros(settings.numCells).reshape(settings.numCells, 1)
 
+  settings.IAVA[AVAinds] = AVAstrength * settings.NEURONFACTOR2 * 1000
+  settings.IAVB[AVBinds] = AVBstrength * settings.NEURONFACTOR2 * 1000
+
   settings.ggap = v[1]
   settings.gsyne= v[2]
   settings.gsyni = v[3]
@@ -163,14 +166,10 @@ def Fit_HuberBraun_Matrix_5param_AVB_First(v, r1):
       currLine = [float(x) for x in currLine]
       inits_V.append(currLine)
 
-  inits_asd = 1/(1+np.exp(-settings.ssd*(np.subtract(inits_V, settings.V0sd))))
-  inits_asr = np.divide(np.add(inits_V, 60), 10)
-  inits_s = np.zeros((settings.numCells, 1))
-
   inits_V = np.array(inits_V)
-  inits_asd = np.array(inits_asd)
-  inits_asr = np.array(inits_asr)
-  inits_s = np.array(inits_s)
+  inits_asd = 1/(1+np.exp(-settings.ssd*(inits_V - settings.V0sd)))
+  inits_asr = (inits_V + 60)/10
+  inits_s = np.zeros((settings.numCells, 1))
 
   inits = np.concatenate([inits_V, inits_asd, inits_asr, inits_s], axis=0)
 
@@ -185,11 +184,6 @@ def Fit_HuberBraun_Matrix_5param_AVB_First(v, r1):
 
   muscle_V = V[muscleInds, :]
   dorsalmuscles_V = V[dorsalmuscleInds, :]
-
-  plt.figure()
-  for i in range(settings.numCells):
-    plt.plot(sol.t, sol.y[i, :], label=f'Cell {i}')
-  plt.legend()
 
   dorsal_Seg1 = sum(dorsalmuscles_V[0:3, :])
   dorsal_Seg2 = sum(dorsalmuscles_V[3:6, :])
@@ -232,6 +226,6 @@ def Fit_HuberBraun_Matrix_5param_AVB_First(v, r1):
 
   H1 = plt.figure(1)
   plotKymograph_AVB_First(data_AVB_1, r1, ratio1AVB, ratio2AVB, BestMaxAVB, SCOAVB)
-  plt.savefig((f'Data/Kymograph_Comb%d_AVB_First.png', r1), 'figure_format', 'png')\
+  plt.savefig(f'Data/Kymograph_Comb{r1}_AVB_First.png', format='png')
   
   return np.concatenate([SCOAVB, ratio1AVB, ratio2AVB, IncCount, DecCount, V_AVB, asd_AVB, asr_AVB, s_AVB, data_AVB_1])
