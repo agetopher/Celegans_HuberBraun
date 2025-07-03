@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 import os
 import sys
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-from Functions import get_scores, plotKymograph_AVB_First, HuberBraun_Matrix
+from Functions import get_scores, plotKymograph_AVB_First, HuberBraun_Matrix, get_muscle_scores
 import settings
 
 def Fit_HuberBraun_Matrix_5param_AVB_First(v, r1):
@@ -182,6 +182,12 @@ def Fit_HuberBraun_Matrix_5param_AVB_First(v, r1):
   asr = sol.y[2*settings.numCells:3*settings.numCells, :]
   s = sol.y[3*settings.numCells:4*settings.numCells, :]
 
+  dorsalmuscle_V = V[dorsalmuscleInds, :]
+  ventralmuscle_V = V[ventralmuscleInds, :]  
+
+  return sol.t, dorsalmuscle_V, ventralmuscle_V
+
+  '''
   muscle_V = V[muscleInds, :]
   dorsalmuscles_V = V[dorsalmuscleInds, :]
 
@@ -229,3 +235,4 @@ def Fit_HuberBraun_Matrix_5param_AVB_First(v, r1):
   plt.savefig(f'Data/Kymograph_Comb{r1}_AVB_First.png', format='png')
   
   return np.concatenate([SCOAVB, ratio1AVB, ratio2AVB, IncCount, DecCount, V_AVB, asd_AVB, asr_AVB, s_AVB, data_AVB_1])
+  '''

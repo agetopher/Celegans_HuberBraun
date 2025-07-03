@@ -680,6 +680,12 @@ def get_scores(rawdata, input):
         DecPropAltRatio = np.nan
   return [score1, score2, score3, IncCount, DecCount,IncPropPeriod, DecPropPeriod, IncAltPeriod, DecAltPeriod, IncPropAltRatio, DecPropAltRatio]
 
+def get_muscle_scores(rawdata, input):
+  rawt = rawdata[0, :]
+  rawmuscle = rawdata[1, :]
+
+  print("working")
+
 # Plot Kymograph for the First Forward Run
 def plotKymograph_AVB_First(rawdata, r1, AVB_ratio1, AVB_ratio2, FixMaxAVB, fbest):
   rawt = rawdata[0, :]
