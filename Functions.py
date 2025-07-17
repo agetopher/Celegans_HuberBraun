@@ -265,7 +265,7 @@ def get_scores(rawdata, input):
         btofDecPhaseDiffs = np.zeros((len(seg2DecInds), 5))
 
         # ftob inc
-        for ix in np.arange(0, len(seg1IncInds)):
+        for ix in range(len(seg1IncInds)-1):
             percent_overlap = np.array([])
             ftobIncTimes = np.array([])
             ftobIncTimes = np.append(ftobIncTimes, seg1IncTimes[ix])
@@ -340,7 +340,7 @@ def get_scores(rawdata, input):
 
                                 ftobIncTimes = np.append(ftobIncTimes, next_ftobInc_seg6)
 
-            checkAltPeriod = seg1IncTimes[ix]
+            checkAltPeriod = seg1IncTimes[ix+1]
             if len(ftobIncTimes) == 6:
                 ftobIncCount = ftobIncCount + 1
                 ftobIncPropPeriod = ftobIncTimes[5] - ftobIncTimes[0]
@@ -354,7 +354,7 @@ def get_scores(rawdata, input):
                 allForwardTimeDiffs = np.append(allForwardTimeDiffs, ftobIncTimesDiff)
       
         # ftob dec
-        for ix in np.arange(0, len(seg1DecInds)):
+        for ix in range(len(seg1DecInds)-1):
             percent_overlap = np.array([])
             ftobDecTimes = np.array([])
             ftobDecTimes = np.append(ftobDecTimes, seg1DecTimes[ix])
@@ -371,7 +371,7 @@ def get_scores(rawdata, input):
                 overlap = next_ftobInc_seg1 - next_ftobDec_seg2
                 percent_overlap = np.append(percent_overlap, overlap/duration)
 
-                ftobDecTimes[1] = next_ftobDec_seg2
+                ftobDecTimes = np.append(ftobDecTimes, next_ftobDec_seg2)
                 if len(seg2IncTimes[seg2IncTimes > ftobDecTimes[1]]) > 0:
                     next_ftobInc_seg2 = np.min(seg2IncTimes[seg2IncTimes > ftobDecTimes[1]])
                 else:
@@ -385,7 +385,7 @@ def get_scores(rawdata, input):
                     overlap = next_ftobInc_seg2 - next_ftobDec_seg3
                     percent_overlap = np.append(percent_overlap, overlap/duration)
 
-                    ftobDecTimes[2] = next_ftobDec_seg3
+                    ftobDecTimes = np.append(ftobDecTimes, next_ftobDec_seg3)
                     if len(seg3IncTimes[seg3IncTimes > ftobDecTimes[2]]) > 0:
                         next_ftobInc_seg3 = np.min(seg3IncTimes[seg3IncTimes > ftobDecTimes[2]])
                     else:
@@ -399,7 +399,7 @@ def get_scores(rawdata, input):
                         overlap = next_ftobInc_seg3 - next_ftobDec_seg4
                         percent_overlap = np.append(percent_overlap, overlap/duration)
 
-                        ftobDecTimes[3] = next_ftobDec_seg4
+                        ftobDecTimes = np.append(ftobDecTimes, next_ftobDec_seg4)
                         if len(seg4IncTimes[seg4IncTimes > ftobDecTimes[3]]) > 0:
                             next_ftobInc_seg4 = np.min(seg4IncTimes[seg4IncTimes > ftobDecTimes[3]])
                         else:
@@ -413,7 +413,7 @@ def get_scores(rawdata, input):
                             overlap = next_ftobInc_seg4 - next_ftobDec_seg5
                             percent_overlap = np.append(percent_overlap, overlap/duration)
 
-                            ftobDecTimes[4] = next_ftobDec_seg5
+                            ftobDecTimes = np.append(ftobDecTimes, next_ftobDec_seg5)
                             if len(seg5IncTimes[seg5IncTimes > ftobDecTimes[4]]) > 0:
                                 next_ftobInc_seg5 = np.min(seg5IncTimes[seg5IncTimes > ftobDecTimes[4]])
                             else:
@@ -427,9 +427,9 @@ def get_scores(rawdata, input):
                                 overlap = next_ftobInc_seg5 - next_ftobDec_seg6
                                 percent_overlap = np.append(percent_overlap, overlap/duration)
 
-                                ftobDecTimes[5] = next_ftobDec_seg6
+                                ftobDecTimes = np.append(ftobDecTimes, next_ftobDec_seg6)
 
-            checkAltPeriod = seg1DecTimes[ix]
+            checkAltPeriod = seg1DecTimes[ix+1]
             if len(ftobDecTimes) == 6:
                 ftobDecCount = ftobDecCount + 1
                 ftobDecPropPeriod = ftobDecTimes[5] - ftobDecTimes[0]
@@ -443,7 +443,7 @@ def get_scores(rawdata, input):
                 allForwardTimeDiffs = np.append(allForwardTimeDiffs, ftobDecTimesDiff)
             
         # btof inc
-        for ix in np.arange(0, len(seg6IncInds)):
+        for ix in range(len(seg6IncInds)-1):
             percent_overlap = np.array([])
             btofIncTimes = np.array([])
             btofIncTimes = np.append(btofIncTimes, seg6IncTimes[ix])
@@ -460,7 +460,7 @@ def get_scores(rawdata, input):
                 overlap = next_btofDec_seg6 - next_btofInc_seg5
                 percent_overlap = np.append(percent_overlap, overlap/duration)
 
-                btofIncTimes[1] = next_btofInc_seg5
+                btofIncTimes = np.append(btofIncTimes, next_btofInc_seg5)
                 if len(seg5DecTimes[seg5DecTimes > btofIncTimes[1]]) > 0:
                     next_btofDec_seg5 = np.min(seg5DecTimes[seg5DecTimes > btofIncTimes[1]])
                 else:
@@ -474,7 +474,7 @@ def get_scores(rawdata, input):
                     overlap = next_btofDec_seg5 - next_btofInc_seg4
                     percent_overlap = np.append(percent_overlap, overlap/duration)
 
-                    btofIncTimes[2] = next_btofInc_seg4
+                    btofIncTimes = np.append(btofIncTimes, next_btofInc_seg4)
                     if len(seg4DecTimes[seg4DecTimes > btofIncTimes[2]]) > 0:
                         next_btofDec_seg4 = np.min(seg4DecTimes[seg4DecTimes > btofIncTimes[2]])
                     else:
@@ -488,7 +488,7 @@ def get_scores(rawdata, input):
                         overlap = next_btofDec_seg4 - next_btofInc_seg3
                         percent_overlap = np.append(percent_overlap, overlap/duration)
 
-                        btofIncTimes[3] = next_btofInc_seg3
+                        btofIncTimes = np.append(btofIncTimes, next_btofInc_seg3)
                         if len(seg3DecTimes[seg3DecTimes > btofIncTimes[3]]) > 0:
                             next_btofDec_seg3 = np.min(seg3DecTimes[seg3DecTimes > btofIncTimes[3]])
                         else:
@@ -502,7 +502,7 @@ def get_scores(rawdata, input):
                             overlap = next_btofDec_seg3 - next_btofInc_seg2
                             percent_overlap = np.append(percent_overlap, overlap/duration)
 
-                            btofIncTimes[4] = next_btofInc_seg2
+                            btofIncTimes = np.append(btofIncTimes, next_btofInc_seg2)
                             if len(seg2DecTimes[seg2DecTimes > btofIncTimes[4]]) > 0:
                                 next_btofDec_seg2 = np.min(seg2DecTimes[seg2DecTimes > btofIncTimes[4]])
                             else:
@@ -516,9 +516,9 @@ def get_scores(rawdata, input):
                                 overlap = next_btofDec_seg2 - next_btofInc_seg1
                                 percent_overlap = np.append(percent_overlap, overlap/duration)
 
-                                btofIncTimes[5] = next_btofInc_seg1
+                                btofIncTimes = np.append(btofIncTimes, next_btofInc_seg1)
 
-            checkAltPeriod = seg6IncTimes[ix]
+            checkAltPeriod = seg6IncTimes[ix+1]
             if len(btofIncTimes) == 6:
               btofIncCount = btofIncCount + 1
               btofIncPropPeriod = btofIncTimes[5] - btofIncTimes[0]
@@ -532,7 +532,7 @@ def get_scores(rawdata, input):
               allBackwardTimeDiffs = np.append(allBackwardTimeDiffs, btofIncTimesDiff)
           
         # btof dec
-        for ix in np.arange(0, len(seg6DecInds)):
+        for ix in range(len(seg6DecInds)-1):
             percent_overlap = np.array([])
             btofDecTimes = np.array([])
             btofDecTimes = np.append(btofDecTimes, seg6DecTimes[ix])
@@ -549,46 +549,50 @@ def get_scores(rawdata, input):
                 overlap = next_btofInc_seg6 - next_btofDec_seg5
                 percent_overlap = np.append(percent_overlap, overlap/duration)
 
-                btofDecTimes[1] = next_btofDec_seg5
-                if len(seg5DecTimes[seg5DecTimes > btofDecTimes[1]]) > 0:
-                    next_btofDec_seg5 = np.min(seg5DecTimes[seg5DecTimes > btofDecTimes[1]])
+                btofDecTimes = np.append(btofDecTimes, next_btofDec_seg5)
+                if len(seg5IncTimes[seg5IncTimes > btofDecTimes[1]]) > 0:
+                    next_btofInc_seg5 = np.min(seg5IncTimes[seg5IncTimes > btofDecTimes[1]])
                 else:
-                    next_btofDec_seg5 = 0
-                if len(seg4IncTimes[seg4IncTimes > btofDecTimes[1]]) > 0:
-                    next_btofInc_seg4 = np.min(seg4IncTimes[seg4IncTimes > btofDecTimes[1]])
+                    next_btofInc_seg5 = 0
+                if len(seg4DecTimes[seg4DecTimes > btofDecTimes[1]]) > 0:
+                    next_btofDec_seg4 = np.min(seg4DecTimes[seg4DecTimes > btofDecTimes[1]])
                 else:
-                    next_btofInc_seg4 = 0
-                if next_btofDec_seg5 > 0 and next_btofInc_seg4 > 0 and next_btofInc_seg4 < next_btofDec_seg5:
-                    duration = next_btofInc_seg4 - btofDecTimes[1]
-                    overlap = next_btofInc_seg4 - next_btofDec_seg5
+                    next_btofDec_seg4 = 0
+                if next_btofDec_seg5 > 0 and next_btofDec_seg4 > 0 and next_btofDec_seg4 < next_btofDec_seg5:
+                    duration = next_btofInc_seg5 - btofDecTimes[1]
+                    overlap = next_btofInc_seg5 - next_btofDec_seg4
                     percent_overlap = np.append(percent_overlap, overlap/duration)
 
-                    btofDecTimes[2] = next_btofDec_seg5
-                    if len(seg4DecTimes[seg4DecTimes > btofDecTimes[2]]) > 0:
-                        next_btofDec_seg4 = np.min(seg4DecTimes[seg4DecTimes > btofDecTimes[2]])
+                    btofDecTimes = np.append(btofDecTimes, next_btofDec_seg5)
+                    if len(seg4IncTimes[seg4IncTimes > btofDecTimes[2]]) > 0:
+                        next_btofInc_seg4 = np.min(seg4IncTimes[seg4IncTimes > btofDecTimes[2]])
                     else:
-                        next_btofDec_seg4 = 0
+                        next_btofInc_seg4 = 0
                     if len(seg3DecTimes[seg3DecTimes > btofDecTimes[2]]) > 0:
-                        next_btofInc_seg3 = np.min(seg3IncTimes[seg3IncTimes > btofDecTimes[2]])
+                        next_btofDec_seg3 = np.min(seg3DecTimes[seg3DecTimes > btofDecTimes[2]])
                     else:
-                        next_btofInc_seg3 = 0
-                    if next_btofDec_seg4 > 0 and next_btofInc_seg3 > 0 and next_btofInc_seg3 < next_btofDec_seg4:
-                        duration = next_btofInc_seg3 - btofDecTimes[2]
-                        overlap = next_btofInc_seg3 - next_btofDec_seg4
+                        next_btofDec_seg3 = 0
+                    if next_btofInc_seg4 > 0 and next_btofDec_seg3 > 0 and next_btofDec_seg3 < next_btofInc_seg4:
+                        duration = next_btofInc_seg4 - btofDecTimes[2]
+                        overlap = next_btofInc_seg4 - next_btofDec_seg3
                         percent_overlap = np.append(percent_overlap, overlap/duration)
 
-                        btofDecTimes[3] = next_btofDec_seg4
+                        btofDecTimes = np.append(btofDecTimes, next_btofDec_seg4)
                         if len(seg3IncTimes[seg3IncTimes > btofDecTimes[3]]) > 0:
                             next_btofInc_seg3 = np.min(seg3IncTimes[seg3IncTimes > btofDecTimes[3]])
                         else:
                             next_btofInc_seg3 = 0
-                        if next_btofInc_seg3 > 0 and next_btofDec_seg4 > 0 and next_btofDec_seg4 < next_btofInc_seg3:
+                        if len(seg2DecTimes[seg2DecTimes > btofDecTimes[3]]) > 0:
+                            next_btofDec_seg2 = np.min(seg2DecTimes[seg2DecTimes > btofDecTimes[3]])
+                        else:
+                            next_btofDec_seg2 = 0
+                        if next_btofInc_seg3 > 0 and next_btofDec_seg2 > 0 and next_btofDec_seg2 < next_btofInc_seg3:
                             duration = next_btofInc_seg3 - btofDecTimes[3]
-                            overlap = next_btofInc_seg3 - next_btofDec_seg4
+                            overlap = next_btofInc_seg3 - next_btofDec_seg2
                             percent_overlap = np.append(percent_overlap, overlap/duration)
 
-                            btofDecTimes[4] = next_btofDec_seg3
-                            if len(seg2DecTimes[seg2DecTimes > btofDecTimes[4]]) > 0:
+                            btofDecTimes = np.append(btofDecTimes, next_btofDec_seg3)
+                            if len(seg2IncTimes[seg2IncTimes > btofDecTimes[4]]) > 0:
                                 next_btofInc_seg2 = np.min(seg2IncTimes[seg2IncTimes > btofDecTimes[4]])
                             else:
                                 next_btofInc_seg2 = 0
@@ -601,9 +605,9 @@ def get_scores(rawdata, input):
                                 overlap = next_btofInc_seg2 - next_btofDec_seg1
                                 percent_overlap = np.append(percent_overlap, overlap/duration)
 
-                                btofDecTimes[5] = next_btofDec_seg1
+                                btofDecTimes = np.append(btofDecTimes, next_btofDec_seg1)
 
-            checkAltPeriod = seg6DecTimes[ix]
+            checkAltPeriod = seg6DecTimes[ix+1]
             if len(btofDecTimes) == 6:
                 btofDecCount = btofDecCount + 1
                 btofDecPropPeriod = btofDecTimes[5] - btofDecTimes[0]
@@ -699,7 +703,7 @@ def get_muscle_scores(rawdata, input):
     print("working")
 
 # Plot Kymograph for the First Forward Run
-def plotKymograph_AVB_First(rawdata, r1, AVB_ratio1, AVB_ratio2, FixMaxAVB, fbest):
+def plotKymograph(rawdata, r1, ratio1, ratio2, FixMax, fbest, input):
     rawt = rawdata[0, :]
     rawsegs = rawdata[1:, :]
 
@@ -756,9 +760,11 @@ def plotKymograph_AVB_First(rawdata, r1, AVB_ratio1, AVB_ratio2, FixMaxAVB, fbes
     plt.plot(t/1000, 0*t, color=[0.5, 0.5, 0.5], linewidth=3)
     plt.xlabel('time (s)')
     plt.legend(['segment 1', '2', '3', '4', '5', '6'])
-    plt.legend()
     plt.xlim([np.min(t/1000), np.max(t/1000)])
-    plt.title(f'C{r1} AVB (R1){AVB_ratio1} (R2){AVB_ratio2} SQ{FixMaxAVB} Score{fbest}')
+    if input == 'AVB':
+        plt.title(f'C{r1} AVB (R1){ratio1} (R2){ratio2} SQ{FixMax} Score{fbest}')
+    elif input == 'AVA':
+        plt.title(f'C{r1} AVA (R1){ratio1} (R2){ratio2} SQ{FixMax} Score{fbest}')
 
     plt.subplot(2, 1, 2)
     plt.pcolor(flagmat)

@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 import os
 import sys
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-from Functions import get_scores, plotKymograph_AVB_First, HuberBraun_Matrix, get_muscle_scores
+from Functions import get_scores, plotKymograph, HuberBraun_Matrix, get_muscle_scores
 import settings
 
 def Fit_HuberBraun_Matrix_5param_AVA_Second(v, r1, V_AVB, asd_AVB, asr_AVB, s_AVB):
@@ -211,21 +211,20 @@ def Fit_HuberBraun_Matrix_5param_AVA_Second(v, r1, V_AVB, asd_AVB, asr_AVB, s_AV
   scores = get_scores(data, 'AVA')
   print(scores)
 
-  SCOAVB = scores[0]
+  SCOAVA = scores[0]
   IncCount = scores[3]
-  ratio1AVB = scores[-2]
+  ratio1AVA = scores[-2]
   DecCount = scores[4]
-  ratio2AVB = scores[-1]
+  ratio2AVA = scores[-1]
 
-  BestMaxAVB = IncCount + DecCount
-  V_AVB = V[-1, :].T
-  asd_AVB = asd[-1, :].T
-  asr_AVB = asr[-1, :].T
-  s_AVB = s[-1, :].T
-  data_AVB_1 = data;
+  BestMaxAVA = IncCount + DecCount
+  V_AVA = V[-1, :].T
+  asd_AVA = asd[-1, :].T
+  asr_AVA = asr[-1, :].T
+  s_AVA = s[-1, :].T
 
   H1 = plt.figure(1)
-  plotKymograph_AVB_First(data_AVB_1, r1, ratio1AVB, ratio2AVB, BestMaxAVB, SCOAVB)
-  plt.savefig(f'Data/Kymograph_Comb{r1}_AVB_First.png', format='png')
+  plotKymograph(data, r1, ratio1AVA, ratio2AVA, BestMaxAVA, SCOAVA, 'AVA')
+  plt.savefig(f'Data/Kymograph_Comb{r1}_AVA_Second.png', format='png')
   
-  return np.concatenate([SCOAVB, ratio1AVB, ratio2AVB, IncCount, DecCount, V_AVB, asd_AVB, asr_AVB, s_AVB, data_AVB_1])
+  return SCOAVA, ratio1AVA, ratio2AVA, IncCount, DecCount, V_AVA, asd_AVA, asr_AVA, s_AVA
