@@ -166,10 +166,10 @@ def Fit_HuberBraun_Matrix_5param_AVA_Second(v, r1, V_AVB, asd_AVB, asr_AVB, s_AV
       currLine = [float(x) for x in currLine]
       inits_V.append(currLine)
 
-  inits_V = np.array(inits_V)
-  inits_asd = 1/(1+np.exp(-settings.ssd*(inits_V - settings.V0sd)))
-  inits_asr = (inits_V + 60)/10
-  inits_s = np.zeros((settings.numCells, 1))
+  inits_V = V_AVB
+  inits_asd = asd_AVB
+  inits_asr = asr_AVB
+  inits_s = s_AVB
 
   inits = np.concatenate([inits_V, inits_asd, inits_asr, inits_s], axis=0)
 

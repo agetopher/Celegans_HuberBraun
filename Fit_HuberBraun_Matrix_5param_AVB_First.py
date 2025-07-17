@@ -7,7 +7,7 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from Functions import get_scores, plotKymograph, HuberBraun_Matrix, get_muscle_scores
 import settings
 
-def Fit_HuberBraun_Matrix_5param_AVB_First(v, r1):
+def Fit_HuberBraun_Matrix_5param_AVB_First(v, r1, test=False):
     settings.IsyniRec = []
     settings.IsyneRec = []
 
@@ -218,13 +218,16 @@ def Fit_HuberBraun_Matrix_5param_AVB_First(v, r1):
     ratio2AVB = scores[-1]
 
     BestMaxAVB = IncCount + DecCount
-    V_AVB = V[-1, :].T
-    asd_AVB = asd[-1, :].T
-    asr_AVB = asr[-1, :].T
-    s_AVB = s[-1, :].T
+    V_AVB = V[:, -1].copy()
+    asd_AVB = asd[:, -1].copy()
+    asr_AVB = asr[:, -1].copy()
+    s_AVB = s[:, -1].copy()
 
     H1 = plt.figure(r1)
     plotKymograph(data, r1, ratio1AVB, ratio2AVB, BestMaxAVB, SCOAVB, 'AVB')
     plt.savefig(f'Data/Kymograph_Comb{r1}_AVB_First.png', format='png')
 
-    return SCOAVB, ratio1AVB, ratio2AVB, IncCount, DecCount, V_AVB, asd_AVB, asr_AVB, s_AVB
+    if test:
+        return sol.t, sol.y
+    else:
+        return SCOAVB, ratio1AVB, ratio2AVB, IncCount, DecCount, V_AVB, asd_AVB, asr_AVB, s_AVB
