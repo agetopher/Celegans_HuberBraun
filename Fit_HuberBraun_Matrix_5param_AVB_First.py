@@ -177,57 +177,58 @@ def Fit_HuberBraun_Matrix_5param_AVB_First(v, r1, test=False):
 
     sol = solve_ivp(HuberBraun_Matrix, [t0, tf], inits, method='BDF', t_eval=tin)
 
-    V = sol.y[0:settings.numCells, :]
-    asd = sol.y[settings.numCells:2*settings.numCells, :]
-    asr = sol.y[2*settings.numCells:3*settings.numCells, :]
-    s = sol.y[3*settings.numCells:4*settings.numCells, :]
-
-    muscle_V = V[muscleInds, :]
-    dorsalmuscles_V = V[dorsalmuscleInds, :]
-
-    dorsal_Seg1 = sum(dorsalmuscles_V[0:3, :])
-    dorsal_Seg2 = sum(dorsalmuscles_V[3:6, :])
-    dorsal_Seg3 = sum(dorsalmuscles_V[6:9, :])
-    dorsal_Seg4 = sum(dorsalmuscles_V[9:12, :])
-    dorsal_Seg5 = sum(dorsalmuscles_V[12:15, :])
-    dorsal_Seg6 = sum(dorsalmuscles_V[15:18, :])
-
-    ventralmuscles_V = V[ventralmuscleInds, :]
-    ventral_Seg1 = sum(ventralmuscles_V[0:3, :])
-    ventral_Seg2 = sum(ventralmuscles_V[3:6, :])
-    ventral_Seg3 = sum(ventralmuscles_V[6:9, :])
-    ventral_Seg4 = sum(ventralmuscles_V[9:12, :])
-    ventral_Seg5 = sum(ventralmuscles_V[12:15, :])
-    ventral_Seg6 = sum(ventralmuscles_V[15:18, :])
-
-    d_minus_v_Seg1 = dorsal_Seg1 - ventral_Seg1
-    d_minus_v_Seg2 = dorsal_Seg2 - ventral_Seg2
-    d_minus_v_Seg3 = dorsal_Seg3 - ventral_Seg3
-    d_minus_v_Seg4 = dorsal_Seg4 - ventral_Seg4
-    d_minus_v_Seg5 = dorsal_Seg5 - ventral_Seg5
-    d_minus_v_Seg6 = dorsal_Seg6 - ventral_Seg6
-
-    data = np.array([sol.t, d_minus_v_Seg1, d_minus_v_Seg2, d_minus_v_Seg3, d_minus_v_Seg4, d_minus_v_Seg5, d_minus_v_Seg6])
-    scores = get_scores(data, 'AVB')
-    print(scores)
-
-    SCOAVB = scores[0]
-    IncCount = scores[3]
-    ratio1AVB = scores[-2]
-    DecCount = scores[4]
-    ratio2AVB = scores[-1]
-
-    BestMaxAVB = IncCount + DecCount
-    V_AVB = V[:, -1].copy()
-    asd_AVB = asd[:, -1].copy()
-    asr_AVB = asr[:, -1].copy()
-    s_AVB = s[:, -1].copy()
-
-    H1 = plt.figure(r1)
-    plotKymograph(data, r1, ratio1AVB, ratio2AVB, BestMaxAVB, SCOAVB, 'AVB')
-    plt.savefig(f'Data/Kymograph_Comb{r1}_AVB_First.png', format='png')
-
     if test:
         return sol.t, sol.y
+
     else:
+        V = sol.y[0:settings.numCells, :]
+        asd = sol.y[settings.numCells:2*settings.numCells, :]
+        asr = sol.y[2*settings.numCells:3*settings.numCells, :]
+        s = sol.y[3*settings.numCells:4*settings.numCells, :]
+
+        muscle_V = V[muscleInds, :]
+        dorsalmuscles_V = V[dorsalmuscleInds, :]
+
+        dorsal_Seg1 = sum(dorsalmuscles_V[0:3, :])
+        dorsal_Seg2 = sum(dorsalmuscles_V[3:6, :])
+        dorsal_Seg3 = sum(dorsalmuscles_V[6:9, :])
+        dorsal_Seg4 = sum(dorsalmuscles_V[9:12, :])
+        dorsal_Seg5 = sum(dorsalmuscles_V[12:15, :])
+        dorsal_Seg6 = sum(dorsalmuscles_V[15:18, :])
+
+        ventralmuscles_V = V[ventralmuscleInds, :]
+        ventral_Seg1 = sum(ventralmuscles_V[0:3, :])
+        ventral_Seg2 = sum(ventralmuscles_V[3:6, :])
+        ventral_Seg3 = sum(ventralmuscles_V[6:9, :])
+        ventral_Seg4 = sum(ventralmuscles_V[9:12, :])
+        ventral_Seg5 = sum(ventralmuscles_V[12:15, :])
+        ventral_Seg6 = sum(ventralmuscles_V[15:18, :])
+
+        d_minus_v_Seg1 = dorsal_Seg1 - ventral_Seg1
+        d_minus_v_Seg2 = dorsal_Seg2 - ventral_Seg2
+        d_minus_v_Seg3 = dorsal_Seg3 - ventral_Seg3
+        d_minus_v_Seg4 = dorsal_Seg4 - ventral_Seg4
+        d_minus_v_Seg5 = dorsal_Seg5 - ventral_Seg5
+        d_minus_v_Seg6 = dorsal_Seg6 - ventral_Seg6
+
+        data = np.array([sol.t, d_minus_v_Seg1, d_minus_v_Seg2, d_minus_v_Seg3, d_minus_v_Seg4, d_minus_v_Seg5, d_minus_v_Seg6])
+        scores = get_scores(data, 'AVB')
+        print(scores)
+
+        SCOAVB = scores[0]
+        IncCount = scores[3]
+        ratio1AVB = scores[-2]
+        DecCount = scores[4]
+        ratio2AVB = scores[-1]
+
+        BestMaxAVB = IncCount + DecCount
+        V_AVB = V[:, -1].copy()
+        asd_AVB = asd[:, -1].copy()
+        asr_AVB = asr[:, -1].copy()
+        s_AVB = s[:, -1].copy()
+
+        H1 = plt.figure(r1)
+        plotKymograph(data, r1, ratio1AVB, ratio2AVB, BestMaxAVB, SCOAVB, 'AVB')
+        plt.savefig(f'Data/Kymograph_Comb{r1}_AVB_First.png', format='png')
+
         return SCOAVB, ratio1AVB, ratio2AVB, IncCount, DecCount, V_AVB, asd_AVB, asr_AVB, s_AVB

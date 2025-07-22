@@ -7,7 +7,7 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from Functions import get_scores, plotKymograph, HuberBraun_Matrix, get_muscle_scores
 import settings
 
-def Fit_HuberBraun_Matrix_5param_AVA_Second(v, r1, V_AVB, asd_AVB, asr_AVB, s_AVB):
+def Fit_HuberBraun_Matrix_5param_AVA_Second(v, r1, V_AVB, asd_AVB, asr_AVB, s_AVB, test=False):
   settings.IsyniRec = []
   settings.IsyneRec = []
 
@@ -176,6 +176,9 @@ def Fit_HuberBraun_Matrix_5param_AVA_Second(v, r1, V_AVB, asd_AVB, asr_AVB, s_AV
   inits = inits.reshape(4*settings.numCells)
 
   sol = solve_ivp(HuberBraun_Matrix, [t0, tf], inits, method='BDF', t_eval=tin)
+
+  if test:
+    return sol.t, sol.y
 
   V = sol.y[0:settings.numCells, :]
   asd = sol.y[settings.numCells:2*settings.numCells, :]
