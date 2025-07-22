@@ -65,7 +65,7 @@ def example1():
         print(f"{x_np=}")
         print(f"{curvature_np=}")
 
-    np.savetxt("curvature_array_example1.csv", curvature_array, delimiter=",")
+    np.savetxt("Data/curvature_array_example1.csv", curvature_array, delimiter=",")
 
 
 def example2():
@@ -80,7 +80,7 @@ def example2():
 
         # Load neuro-muscle data
         neuro_muscle = []
-        with open(f"AVA_neuro_muscle_avg_{param}.csv", "r") as f:
+        with open(f"Data/AVA_neuro_muscle_avg_{param}.csv", "r") as f:
             temp = f.readlines()
             for line in temp:
                 if line == "\n":
@@ -134,7 +134,7 @@ def example2():
             # print(f"{x_np=}")
             # print(f"{curvature_np=}")
 
-        np.savetxt(f"AVA_curvature_array_avg_{param}.csv", curvature_array, delimiter=",")
+        np.savetxt(f"Data/AVA_curvature_array_avg_{param}.csv", curvature_array, delimiter=",")
 
 
 if __name__ == "__main__":
