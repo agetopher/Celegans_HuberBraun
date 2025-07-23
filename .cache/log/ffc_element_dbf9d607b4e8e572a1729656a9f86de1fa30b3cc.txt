@@ -1,0 +1,2 @@
+/opt/conda/bin/aarch64-conda-linux-gnu-c++ -Wall -shared -fPIC -std=c++11 -O2 -I/opt/conda/include -I/opt/conda/include/eigen3 -I/cache/include ffc_element_dbf9d607b4e8e572a1729656a9f86de1fa30b3cc.cpp -L/cache/lib -Wl,-rpath,/cache/lib -olibdijitso-ffc_element_dbf9d607b4e8e572a1729656a9f86de1fa30b3cc.so
+

@@ -1,0 +1,28 @@
+/opt/conda/bin/aarch64-conda-linux-gnu-c++ -Wall -shared -fPIC -std=c++11 -O3 -fno-math-errno -fno-trapping-math -ffinite-math-only -I/opt/conda/include -I/opt/conda/include/eigen3 -I/cache/include dolfin_expression_4b5ca24e7666a350c74719fb598f7cd5.cpp -L/opt/conda/lib -L/opt/conda/aarch64-conda-linux-gnu/sysroot/usr/lib -L/cache/lib -Wl,-rpath,/cache/lib -lmpi -lpetsc -lslepc -lm -ldl -lz -lsz -lpthread -lcurl -lcrypto -lhdf5 -lboost_timer -ldolfin -olibdijitso-dolfin_expression_4b5ca24e7666a350c74719fb598f7cd5.so
+
+In file included from /opt/conda/include/eigen3/Eigen/Core:214,
+                 from /opt/conda/include/eigen3/Eigen/Dense:1,
+                 from /opt/conda/include/dolfin/function/Expression.h:26,
+                 from /tmp/tmpretyu24f/dolfin_expression_4b5ca24e7666a350c74719fb598f7cd5.cpp:13:
+/opt/conda/include/eigen3/Eigen/src/Core/arch/NEON/PacketMath.h: In function 'Packet Eigen::internal::pload(const typename unpacket_traits<T>::type*) [with Packet = eigen_packet_wrapper<int, 2>; typename unpacket_traits<T>::type = signed char]':
+/opt/conda/include/eigen3/Eigen/src/Core/arch/NEON/PacketMath.h:1671:9: warning: 'void* memcpy(void*, const void*, size_t)' copying an object of non-trivial type 'Eigen::internal::Packet4c' {aka 'struct Eigen::internal::eigen_packet_wrapper<int, 2>'} from an array of 'const int8_t' {aka 'const signed char'} [-Wclass-memaccess]
+ 1671 |   memcpy(&res, from, sizeof(Packet4c));
+      |   ~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+In file included from /opt/conda/include/eigen3/Eigen/Core:172:
+/opt/conda/include/eigen3/Eigen/src/Core/GenericPacketMath.h:159:8: note: 'Eigen::internal::Packet4c' {aka 'struct Eigen::internal::eigen_packet_wrapper<int, 2>'} declared here
+  159 | struct eigen_packet_wrapper
+      |        ^~~~~~~~~~~~~~~~~~~~
+/opt/conda/include/eigen3/Eigen/src/Core/arch/NEON/PacketMath.h: In function 'Packet Eigen::internal::ploadu(const typename unpacket_traits<T>::type*) [with Packet = eigen_packet_wrapper<int, 2>; typename unpacket_traits<T>::type = signed char]':
+/opt/conda/include/eigen3/Eigen/src/Core/arch/NEON/PacketMath.h:1716:9: warning: 'void* memcpy(void*, const void*, size_t)' copying an object of non-trivial type 'Eigen::internal::Packet4c' {aka 'struct Eigen::internal::eigen_packet_wrapper<int, 2>'} from an array of 'const int8_t' {aka 'const signed char'} [-Wclass-memaccess]
+ 1716 |   memcpy(&res, from, sizeof(Packet4c));
+      |   ~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/opt/conda/include/eigen3/Eigen/src/Core/GenericPacketMath.h:159:8: note: 'Eigen::internal::Packet4c' {aka 'struct Eigen::internal::eigen_packet_wrapper<int, 2>'} declared here
+  159 | struct eigen_packet_wrapper
+      |        ^~~~~~~~~~~~~~~~~~~~
+/tmp/tmpretyu24f/dolfin_expression_4b5ca24e7666a350c74719fb598f7cd5.cpp: In member function 'virtual std::shared_ptr<dolfin::GenericFunction> dolfin::dolfin_expression_4b5ca24e7666a350c74719fb598f7cd5::get_generic_function(std::string) const':
+/tmp/tmpretyu24f/dolfin_expression_4b5ca24e7666a350c74719fb598f7cd5.cpp:96:11: warning: this 'if' clause does not guard... [-Wmisleading-indentation]
+   96 |           if (name == "a") return generic_function_a;          if (name == "b") return generic_function_b;
+      |           ^~
+/tmp/tmpretyu24f/dolfin_expression_4b5ca24e7666a350c74719fb598f7cd5.cpp:96:64: note: ...this statement, but the latter is misleadingly indented as if it were guarded by the 'if'
+   96 |           if (name == "a") return generic_function_a;          if (name == "b") return generic_function_b;
+      |                                                                ^~

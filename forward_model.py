@@ -74,13 +74,13 @@ def example2():
     for forcing.
     """
 
-    params = [44, 68, 81, 94, 98, 106, 112]
+    params = [44]
 
     for param in params:
 
         # Load neuro-muscle data
         neuro_muscle = []
-        with open(f"Data/AVA_neuro_muscle_avg_{param}.csv", "r") as f:
+        with open(f"Data/AVB_median_norm_{param}.txt", "r") as f:
             temp = f.readlines()
             for line in temp:
                 if line == "\n":
@@ -134,7 +134,7 @@ def example2():
             # print(f"{x_np=}")
             # print(f"{curvature_np=}")
 
-        np.savetxt(f"Data/AVA_curvature_array_avg_{param}.csv", curvature_array, delimiter=",")
+        np.savetxt(f"Data/median_norm_curvature_array_avg_{param}.csv", curvature_array, delimiter=",")
 
 
 if __name__ == "__main__":
