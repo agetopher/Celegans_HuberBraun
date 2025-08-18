@@ -1,0 +1,2 @@
+/opt/conda/bin/aarch64-conda-linux-gnu-c++ -Wall -shared -fPIC -std=c++11 -O2 -I/opt/conda/include -I/opt/conda/include/eigen3 -I/cache/include ffc_form_c3da257040ac240c66f28d69902b45e7b745ab27.cpp -L/cache/lib -Wl,-rpath,/cache/lib -ldijitso-ffc_element_06f4f8cdd292377f304b8bfc265c6ac65c33b070 -ldijitso-ffc_element_2b921bb5283c41e0489f9c5fddeabe6ba6712798 -ldijitso-ffc_coordinate_mapping_d3d86b312476c09a962a560ce7793fcb0bd40287 -olibdijitso-ffc_form_c3da257040ac240c66f28d69902b45e7b745ab27.so
+

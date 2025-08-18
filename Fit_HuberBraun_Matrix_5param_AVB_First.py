@@ -1,13 +1,12 @@
 import numpy as np
 from scipy.integrate import solve_ivp
-import matplotlib.pyplot as plt
 import os
 import sys
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-from Functions import get_scores, plotKymograph, HuberBraun_Matrix, get_muscle_scores
+from Functions import HuberBraun_Matrix
 import settings
 
-def Fit_HuberBraun_Matrix_5param_AVB_First(v, r1, test=False):
+def Fit_HuberBraun_Matrix_5param_AVB_First(v, r1):
     settings.IsyniRec = []
     settings.IsyneRec = []
 
@@ -153,7 +152,7 @@ def Fit_HuberBraun_Matrix_5param_AVB_First(v, r1, test=False):
     
     t0 = 0
     tf = 30000
-    tin = list(range(t0, tf, 50))
+    tin = list(range(t0, tf, 10))
 
     inits_V = []
     with open('Data/InitialVoltages.dat', 'r') as f:
@@ -177,58 +176,49 @@ def Fit_HuberBraun_Matrix_5param_AVB_First(v, r1, test=False):
 
     sol = solve_ivp(HuberBraun_Matrix, [t0, tf], inits, method='BDF', t_eval=tin)
 
-    if test:
-        return sol.t, sol.y
+    if sol.t.shape[0] < 2000:
+        return np.zeros(2000)
 
-    else:
-        V = sol.y[0:settings.numCells, :]
-        asd = sol.y[settings.numCells:2*settings.numCells, :]
-        asr = sol.y[2*settings.numCells:3*settings.numCells, :]
-        s = sol.y[3*settings.numCells:4*settings.numCells, :]
+    V = sol.y[0:settings.numCells, :]
+    asd = sol.y[settings.numCells:2*settings.numCells, :]
+    asr = sol.y[2*settings.numCells:3*settings.numCells, :]
+    s = sol.y[3*settings.numCells:4*settings.numCells, :]
 
-        muscle_V = V[muscleInds, :]
-        dorsalmuscles_V = V[dorsalmuscleInds, :]
+    muscle_V = V[muscleInds, :]
+    dorsalmuscles_V = V[dorsalmuscleInds, :]
+    ventralmuscles_V = V[ventralmuscleInds, :]
 
-        dorsal_Seg1 = sum(dorsalmuscles_V[0:3, :])
-        dorsal_Seg2 = sum(dorsalmuscles_V[3:6, :])
-        dorsal_Seg3 = sum(dorsalmuscles_V[6:9, :])
-        dorsal_Seg4 = sum(dorsalmuscles_V[9:12, :])
-        dorsal_Seg5 = sum(dorsalmuscles_V[12:15, :])
-        dorsal_Seg6 = sum(dorsalmuscles_V[15:18, :])
+    dorsal_median_normed = np.divide(dorsalmuscles_V - (np.ones(dorsalmuscles_V.shape) * np.median(dorsalmuscles_V, axis=1).reshape(18, 1)), (1.25 * (np.quantile(dorsalmuscles_V, 0.8, axis=1) - np.quantile(dorsalmuscles_V, 0.2, axis=1))).reshape(18, 1))
+    ventral_median_normed = np.divide(ventralmuscles_V - (np.ones(ventralmuscles_V.shape) * np.median(ventralmuscles_V, axis=1).reshape(18, 1)), (1.25 * (np.quantile(ventralmuscles_V, 0.8, axis=1) - np.quantile(ventralmuscles_V, 0.2, axis=1))).reshape(18, 1))
 
-        ventralmuscles_V = V[ventralmuscleInds, :]
-        ventral_Seg1 = sum(ventralmuscles_V[0:3, :])
-        ventral_Seg2 = sum(ventralmuscles_V[3:6, :])
-        ventral_Seg3 = sum(ventralmuscles_V[6:9, :])
-        ventral_Seg4 = sum(ventralmuscles_V[9:12, :])
-        ventral_Seg5 = sum(ventralmuscles_V[12:15, :])
-        ventral_Seg6 = sum(ventralmuscles_V[15:18, :])
+    relative_strengths = np.array([0.5, 0.6, 0.7, 0.8, 0.9, 0.9, 0.8, 0.7, 0.6, 0.5])
 
-        d_minus_v_Seg1 = dorsal_Seg1 - ventral_Seg1
-        d_minus_v_Seg2 = dorsal_Seg2 - ventral_Seg2
-        d_minus_v_Seg3 = dorsal_Seg3 - ventral_Seg3
-        d_minus_v_Seg4 = dorsal_Seg4 - ventral_Seg4
-        d_minus_v_Seg5 = dorsal_Seg5 - ventral_Seg5
-        d_minus_v_Seg6 = dorsal_Seg6 - ventral_Seg6
+    dorsal_slices = np.array([]).reshape(95, 0)
+    ventral_slices = np.array([]).reshape(95, 0)
+    for i in range(2000):
+        dorsal_slice = np.array([])
+        ventral_slice = np.array([])
+        for j in range(18):
+            curr_dorsal = dorsal_median_normed[j, i+1000] * relative_strengths
+            curr_ventral = ventral_median_normed[j, i+1000] * relative_strengths
 
-        data = np.array([sol.t, d_minus_v_Seg1, d_minus_v_Seg2, d_minus_v_Seg3, d_minus_v_Seg4, d_minus_v_Seg5, d_minus_v_Seg6])
-        scores = get_scores(data, 'AVB')
-        print(scores)
+            if j == 0:
+                dorsal_slice = np.append(dorsal_slice, curr_dorsal[0:5], axis=0).reshape(5, 1)
+                ventral_slice = np.append(ventral_slice, curr_ventral[0:5], axis=0).reshape(5, 1)
+                prev_dorsal = curr_dorsal
+                prev_ventral = curr_ventral
+                continue
 
-        SCOAVB = scores[0]
-        IncCount = scores[3]
-        ratio1AVB = scores[-2]
-        DecCount = scores[4]
-        ratio2AVB = scores[-1]
+            dorsal_slice = np.append(dorsal_slice, (curr_dorsal[:5] + prev_dorsal[5:]).reshape(5, 1), axis=0)
+            ventral_slice = np.append(ventral_slice, (curr_ventral[:5] + prev_ventral[5:]).reshape(5, 1), axis=0)
 
-        BestMaxAVB = IncCount + DecCount
-        V_AVB = V[:, -1].copy()
-        asd_AVB = asd[:, -1].copy()
-        asr_AVB = asr[:, -1].copy()
-        s_AVB = s[:, -1].copy()
+            if j == 17:
+                dorsal_slice = np.append(dorsal_slice, curr_dorsal[5:].reshape(5, 1), axis=0)
+                ventral_slice = np.append(ventral_slice, curr_ventral[5:].reshape(5, 1), axis=0)
 
-        H1 = plt.figure(r1)
-        plotKymograph(data, r1, ratio1AVB, ratio2AVB, BestMaxAVB, SCOAVB, 'AVB')
-        plt.savefig(f'Data/Kymograph_Comb{r1}_AVB_First.png', format='png')
+        dorsal_slices = np.append(dorsal_slices, dorsal_slice, axis=1)
+        ventral_slices = np.append(ventral_slices, ventral_slice, axis=1)
 
-        return SCOAVB, ratio1AVB, ratio2AVB, IncCount, DecCount, V_AVB, asd_AVB, asr_AVB, s_AVB
+    median_normed = dorsal_slices - ventral_slices
+
+    return 8*median_normed
